@@ -6,7 +6,8 @@
             [reitit.coercion.malli :as coe]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [ring.util.response :as resp]
-            [nrepl.server :refer [start-server stop-server]])
+            [nrepl.server :refer [start-server stop-server]]
+            [clj-async-profiler.core :as prof])
 )
 
 (def global-q (atom []))
@@ -18,21 +19,27 @@
            dequeueCount 0]                                           ; Note: swap! passes value of atom, not reference to atom
       (if (= (count vals) 0)
         []
-        (if (= 1000 dequeueCount)
-          (do (prn "returning early") vals)
-          (if (> 0 (.compareTo (:time (first vals)) dequeueTime))
-            (recur (rest vals) (inc dequeueCount))
-            vals))))))
+        (if (> 0 (.compareTo (:time (first vals)) dequeueTime))
+          (recur (rest vals) (inc dequeueCount))
+          vals)))))
+
+(defn fill-global-queue [n]
+  (reset! global-q [])
+  (dotimes [i n]
+    (swap! global-q conj {:time (.minusSeconds (java.time.Instant/now) 15) :body {:a i}})
+))
 
 (comment ""
-  (reset! global-q [
-   (.minusSeconds (java.time.Instant/now) 80)
-   (.minusSeconds (java.time.Instant/now) 20)
-   (java.time.Instant/now)])
+   (fill-global-queue 100)
+   (fill-global-queue 1000)
+   (fill-global-queue 10000)
+   (fill-global-queue 100000)
+   (fill-global-queue 200000)
 
-   (empty-queue! @global-q)
-   (swap! global-q empty-queue!)
-   (> 0 (.compareTo (:time (first @global-q)) (java.time.Instant/now)))
+   (prof/profile (empty-queue! @global-q))
+   (prof/profile (dotimes [i 100] (empty-queue! @global-q)))
+   (prof/profile (dotimes [i 5000000] (rest @global-q)))
+   (prof/serve-ui 8080)
   .)
 
 (defn get-status [{:keys [] :as request}]
@@ -68,7 +75,7 @@
 
 (def server-inst (atom {}))
 (defn -main []
+  (defonce server (start-server :port 8888))
   (reset! server-inst (run-jetty #'handler {:port 8889, :join? false}))
   (.start @server-inst)
-  (defonce server (start-server :port 8888))
   )
