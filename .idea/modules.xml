@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/clj_bun_spreader.iml" filepath="$PROJECT_DIR$/clj_bun_spreader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/clj_performance_tester.iml" filepath="$PROJECT_DIR$/clj_performance_tester.iml" />
     </modules>
   </component>
 </project>

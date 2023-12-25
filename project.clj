@@ -1,4 +1,4 @@
-(defproject clj_bun_spreader "0.1.0-SNAPSHOT"
+(defproject clj_performance_tester "0.1.0-SNAPSHOT"
   :description "Clojure server for comparing against other languages."
   :url "http://github.com/dawguy/blog"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -20,5 +20,5 @@
              "-XX:+UnlockDiagnosticVMOptions"
              "-XX:+DebugNonSafepoints"
              "-XX:-MaxFDLimit"]
-  :repl-options {:init-ns clj-bun-spreader.core}
-  :main clj-bun-spreader.core)
+  :repl-options {:init-ns clj-performance-tester.core}
+  :main clj-performance-tester.core)

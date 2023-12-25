@@ -1,4 +1,4 @@
-(ns clj-bun-spreader.core
+(ns clj-performance-tester.core
   (:require [reitit.ring :as ring]
             [ring.adapter.jetty :refer [run-jetty]]
             [muuntaja.core :as m]
