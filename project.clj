@@ -16,6 +16,9 @@
                  [nrepl "1.0.0"]
                  [com.clojure-goes-fast/clj-async-profiler "1.0.3"]
                  ]
-  :jvm-opts ["-Djdk.attach.allowAttachSelf" "-XX:+UnlockDiagnosticVMOptions" "-XX:+DebugNonSafepoints"]
+  :jvm-opts ["-Djdk.attach.allowAttachSelf"
+             "-XX:+UnlockDiagnosticVMOptions"
+             "-XX:+DebugNonSafepoints"
+             "-XX:-MaxFDLimit"]
   :repl-options {:init-ns clj-bun-spreader.core}
   :main clj-bun-spreader.core)

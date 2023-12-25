@@ -14,22 +14,23 @@
 (def hit-count (atom 0))
 (defn empty-queue! [q]
   (let [curTime (java.time.Instant/now)
-        dequeueTime (.minusSeconds curTime 15)]              ; Make 60 configurable seconds
+        dequeueTime (.toEpochMilli (.minusSeconds curTime 5))] ; Make 60 configurable seconds
     (loop [vals q
            dequeueCount 0]                                           ; Note: swap! passes value of atom, not reference to atom
       (if (= (count vals) 0)
         []
-        (if (> 0 (.compareTo (:time (first vals)) dequeueTime))
-          (recur (rest vals) (inc dequeueCount))
+        (if (< (:time (first vals)) dequeueTime)
+          (recur (vec (rest vals)) (inc dequeueCount))
           vals)))))
 
 (defn fill-global-queue [n]
   (reset! global-q [])
   (dotimes [i n]
-    (swap! global-q conj {:time (.minusSeconds (java.time.Instant/now) 15) :body {:a i}})
+    (swap! global-q conj {:time (.toEpochMilli (.minusSeconds (java.time.Instant/now) 15)) :body {:a i}})
 ))
 
 (comment ""
+   (fill-global-queue 1)
    (fill-global-queue 100)
    (fill-global-queue 1000)
    (fill-global-queue 10000)
@@ -50,7 +51,7 @@
 
 (defn time-in-queue [{:keys [parameters] :as request}]
   (swap! global-q empty-queue!)
-  (swap! global-q conj {:time (java.time.Instant/now) :message parameters})
+  (swap! global-q conj {:time (.toEpochMilli (java.time.Instant/now)) :message parameters})
   (swap! hit-count inc)
   (resp/response "time in queue will be 60")
 )
